@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TV Time — VibeXStudio</title>
+<meta property="og:title" content="TV Time">
+<meta property="og:description" content="Open this app in VibeXStudio">
+<style>
+  body{margin:0;font-family:system-ui,sans-serif;background:#0b0014;color:#fff;display:flex;min-height:100vh;align-items:center;justify-content:center;text-align:center}
+  .card{padding:32px;max-width:420px}
+  .emoji{font-size:64px}
+  h1{font-size:28px;margin:12px 0 4px}
+  p{color:#b0b4ba;line-height:1.5}
+  a.btn{display:block;margin:10px auto;padding:14px 24px;border-radius:14px;background:#7c3aed;color:#fff;text-decoration:none;font-weight:600;max-width:280px}
+  a.alt{background:#212225}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="emoji">⏱️</div>
+  <h1>TV Time</h1>
+  <p>This app was made with VibeXStudio. Opening it in the app…</p>
+  <a class="btn" id="open" href="vibex://import?repo=kerpopule%2Ftv-time&ref=main">Open in VibeXStudio</a>
+  <a class="btn alt" id="store" href="#" style="display:none">Get VibeXStudio</a>
+  <a class="btn alt" href="https://kerpopule.github.io/tv-time/">View on the web</a>
+</div>
+<script>
+  var ua = navigator.userAgent || '';
+  var storeUrl = /android/i.test(ua) ? "https://play.google.com/store/apps/details?id=studio.vibex.app" : "https://apps.apple.com/app/vibexstudio/id0000000000";
+  var storeBtn = document.getElementById('store');
+  storeBtn.href = storeUrl;
+  function tryOpen() {
+    var t = Date.now();
+    window.location.href = "vibex://import?repo=kerpopule%2Ftv-time&ref=main";
+    setTimeout(function () {
+      // If the page is still visible after the timeout, the app likely isn't installed.
+      if (!document.hidden && Date.now() - t < 2500) {
+        storeBtn.style.display = 'block';
+        window.location.href = storeUrl;
+      }
+    }, 1800);
+  }
+  if (/android|iphone|ipad|ipod/i.test(ua)) tryOpen();
+</script>
+</body>
+</html>

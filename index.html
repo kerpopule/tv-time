@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <title>TV Time · Watchlist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="lcars-ambient" aria-hidden="true">
+    <span class="bar bar-1"></span>
+    <span class="bar bar-2"></span>
+    <span class="bar bar-3"></span>
+    <span class="bar bar-4"></span>
+  </div>
+
+  <header class="lcars-top">
+    <div class="lcars-corner">
+      <div class="pill pill-amber"></div>
+      <div class="pill pill-blue"></div>
+    </div>
+    <div class="brand">
+      <div class="brand-id">NCC-1701</div>
+      <h1>TV TIME</h1>
+      <div class="stardate" id="stardate"></div>
+    </div>
+    <div class="lcars-corner right">
+      <button id="addBtn" class="add-btn" aria-label="Add show">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+      <div class="pill pill-amber short"></div>
+    </div>
+  </header>
+
+  <nav class="lcars-tabs" role="tablist">
+    <button class="ltab active" data-tab="upcoming" role="tab">
+      <span class="lt-dot"></span>UPCOMING
+      <span class="lt-count" id="badgeUpcoming">0</span>
+    </button>
+    <button class="ltab" data-tab="shows" role="tab">
+      <span class="lt-dot"></span>SHOWS
+      <span class="lt-count" id="badgeShows">0</span>
+    </button>
+    <button class="ltab" data-tab="watched" role="tab">
+      <span class="lt-dot"></span>WATCHED
+      <span class="lt-count" id="badgeWatched">0</span>
+    </button>
+    <button class="ltab" data-tab="reminders" role="tab">
+      <span class="lt-dot alert"></span>ALERTS
+      <span class="lt-count" id="badgeReminders">0</span>
+    </button>
+  </nav>
+
+  <main class="content">
+    <section id="view-upcoming" class="view active">
+      <div class="lcars-frame">
+        <div class="frame-head"><h2>UPCOMING TRANSMISSIONS</h2></div>
+        <div id="upcomingList" class="upcoming-list"></div>
+        <div id="upcomingEmpty" class="empty hidden">
+          <div class="empty-art">🖖</div>
+          <h3>NO UPCOMING TRANSMISSIONS</h3>
+          <p>Add a show to begin receiving reports.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-shows" class="view">
+      <div class="lcars-frame">
+        <div class="frame-head"><h2>YOUR ARCHIVE</h2></div>
+        <div id="showsGrid" class="shows-grid"></div>
+        <div id="showsEmpty" class="empty hidden">
+          <div class="empty-art">✨</div>
+          <h3>ARCHIVE EMPTY</h3>
+          <p>Tap <strong>+</strong> to add your first title.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-watched" class="view">
+      <div class="lcars-frame">
+        <div class="frame-head"><h2>LOGGED ENTRIES</h2></div>
+        <div id="watchedList" class="upcoming-list"></div>
+        <div id="watchedEmpty" class="empty hidden">
+          <div class="empty-art">📼</div>
+          <h3>NO ENTRIES LOGGED</h3>
+          <p>Mark episodes watched to fill this log.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-reminders" class="view">
+      <div class="lcars-frame">
+        <div class="frame-head">
+          <h2>ALERT QUEUE</h2>
+          <button id="enableNotifsBtn" class="enable-btn">ENABLE NOTIFICATIONS</button>
+        </div>
+        <div id="remindersList" class="reminders-list"></div>
+        <div id="remindersEmpty" class="empty hidden">
+          <div class="empty-art">📡</div>
+          <h3>NO ALERTS</h3>
+          <p>New episodes will appear here when they air.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="addModal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+      <div class="modal-head">
+        <h2>NEW TITLE</h2>
+        <button class="icon-btn" data-close aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="searchInput" type="search" placeholder="Search the database…" autocomplete="off" inputmode="search" enterkeyhint="search" />
+      </div>
+      <div id="searchStatus" class="search-status">Begin typing to search…</div>
+      <div id="searchResults" class="search-results"></div>
+    </div>
+  </div>
+
+  <div id="detailModal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="detail-sheet">
+      <div class="sheet-handle"></div>
+      <button class="detail-close" data-close aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <div id="detailContent" class="detail-content"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
