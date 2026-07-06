@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#000000"/>
+  <rect x="64" y="64" width="384" height="48" rx="24" fill="#ffd166"/>
+  <rect x="64" y="400" width="240" height="48" rx="24" fill="#ffd166"/>
+  <rect x="400" y="144" width="48" height="224" rx="24" fill="#ffd166"/>
+  <text x="256" y="296" font-family="Orbitron, sans-serif" font-weight="900" font-size="100" text-anchor="middle" fill="#ffd166" letter-spacing="-2">TV</text>
+  <text x="256" y="376" font-family="Orbitron, sans-serif" font-weight="700" font-size="36" text-anchor="middle" fill="#ff9933" letter-spacing="6">TIME</text>
+</svg>

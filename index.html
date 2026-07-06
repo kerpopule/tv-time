@@ -2,13 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#000000" />
-  <title>TV Time · Watchlist</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="TV Time" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="description" content="TV Time — your LCARS-styled watchlist tracker for shows and episodes." />
+
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
+  <title>TV Time · Watchlist</title>
 </head>
 <body>
   <div class="lcars-ambient" aria-hidden="true">
@@ -136,6 +148,15 @@
       </button>
       <div id="detailContent" class="detail-content"></div>
     </div>
+  </div>
+
+  <div id="installBanner" class="install-banner hidden">
+    <div class="ib-text">
+      <strong>Install TV Time</strong>
+      <span>Add to home screen for notifications</span>
+    </div>
+    <button id="installBtn" class="ib-btn">INSTALL</button>
+    <button id="dismissInstall" class="ib-x" aria-label="Dismiss">×</button>
   </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>

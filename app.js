@@ -1,8 +1,8 @@
 /* ============================================================
-   TV TIME — Watchlist tracker (LCARS Edition)
+   TV TIME — Watchlist tracker (LCARS Edition, PWA)
    ============================================================ */
 
-const STORAGE_KEY = 'tvtime.v3';
+const STORAGE_KEY = 'tvtime.v4';
 const API_BASE = 'https://api.tvmaze.com';
 const EPISODE_CACHE_TTL = 1000 * 60 * 60 * 12;
 
@@ -11,6 +11,7 @@ const state = {
   watched: {},
   reminders: [],
   notifEnabled: false,
+  installDismissed: false,
 };
 
 function load() {
@@ -22,6 +23,7 @@ function load() {
       state.watched = data.watched || {};
       state.reminders = data.reminders || [];
       state.notifEnabled = !!data.notifEnabled;
+      state.installDismissed = !!data.installDismissed;
     }
   } catch (e) { console.warn('load failed', e); }
 }
@@ -31,6 +33,7 @@ function save() {
     watched: state.watched,
     reminders: state.reminders,
     notifEnabled: state.notifEnabled,
+    installDismissed: state.installDismissed,
   }));
 }
 
@@ -80,6 +83,7 @@ function stripHtml(html) {
 let toastTimer;
 function toast(msg, emoji = '✨') {
   const t = $('#toast');
+  if (!t) return;
   t.innerHTML = `<span class="emoji">${emoji}</span>${msg}`;
   t.classList.add('show');
   clearTimeout(toastTimer);
@@ -208,6 +212,7 @@ async function catchUpTo(showId, epId) {
 async function renderUpcoming() {
   const list = $('#upcomingList');
   const empty = $('#upcomingEmpty');
+  if (!list || !empty) return;
   list.innerHTML = '';
 
   const items = [];
@@ -268,6 +273,7 @@ function upcomingCard(show, ep) {
 function renderShows() {
   const grid = $('#showsGrid');
   const empty = $('#showsEmpty');
+  if (!grid || !empty) return;
   grid.innerHTML = '';
 
   if (state.shows.length === 0) {
@@ -291,6 +297,11 @@ function renderShows() {
         total > 0 ? el('div', { class: 'progress-pill' }, `${total} EP`) : null,
         el('div', { class: 'title' }, show.name),
       );
+      // Direct click listener (one-shot per render)
+      p.addEventListener('click', () => openDetail(show.id));
+      p.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDetail(show.id); }
+      });
       grid.appendChild(p);
     }
   }
@@ -301,6 +312,7 @@ function renderShows() {
 async function renderWatched() {
   const list = $('#watchedList');
   const empty = $('#watchedEmpty');
+  if (!list || !empty) return;
   list.innerHTML = '';
 
   const items = [];
@@ -363,6 +375,7 @@ async function checkReminders() {
 function renderReminders() {
   const list = $('#remindersList');
   const empty = $('#remindersEmpty');
+  if (!list || !empty) return;
   list.innerHTML = '';
 
   const active = state.reminders.filter(r => r.status !== 'dismissed');
@@ -407,6 +420,7 @@ function renderReminders() {
   $('#badgeReminders').textContent = newCount;
 
   const btn = $('#enableNotifsBtn');
+  if (!btn) return;
   if (state.notifEnabled) {
     btn.textContent = 'NOTIFICATIONS ACTIVE';
     btn.classList.add('done');
@@ -431,7 +445,9 @@ async function scheduleBrowserNotifications() {
         try {
           new Notification(`${r.showName} is airing!`, {
             body: `${r.epLabel} — ${r.epName}`,
-            icon: r.poster || undefined,
+            icon: r.poster || 'icons/icon-192.png',
+            badge: 'icons/icon-192.png',
+            tag: r.id,
           });
           r.status = 'notified';
         } catch (e) {}
@@ -444,7 +460,9 @@ async function scheduleBrowserNotifications() {
       try {
         new Notification(`${r.showName} airs in 30 min`, {
           body: `${r.epLabel} — ${r.epName}`,
-          icon: r.poster || undefined,
+          icon: r.poster || 'icons/icon-192.png',
+          badge: 'icons/icon-192.png',
+          tag: r.id,
         });
         r.status = 'notified';
         save();
@@ -678,16 +696,6 @@ function renderEpisodesForSeason(showId, season, allEps) {
   }
 }
 
-/* ---------- GRID CLICK DELEGATION (fix for poster clicks not firing) ---------- */
-document.addEventListener('click', (e) => {
-  const poster = e.target.closest('.poster');
-  if (!poster) return;
-  const id = parseInt(poster.dataset.showId, 10);
-  if (Number.isFinite(id)) {
-    openDetail(id);
-  }
-}, false);
-
 /* ---------- TABS ---------- */
 $$('.ltab').forEach(tab => {
   tab.addEventListener('click', () => {
@@ -859,6 +867,44 @@ $('#enableNotifsBtn').addEventListener('click', async () => {
     toast('Permission denied', '⚠️');
   }
 });
+
+/* ---------- PWA: INSTALL PROMPT + SERVICE WORKER ---------- */
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (!state.installDismissed && state.shows.length > 0) {
+    $('#installBanner').classList.remove('hidden');
+  }
+});
+
+$('#installBtn').addEventListener('click', async () => {
+  if (!deferredPrompt) {
+    toast('Use your browser menu to install', 'ℹ️');
+    return;
+  }
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') {
+    toast('Installed — alerts now fire from your home screen', '🖖');
+  }
+  deferredPrompt = null;
+  $('#installBanner').classList.add('hidden');
+});
+$('#dismissInstall').addEventListener('click', () => {
+  state.installDismissed = true;
+  save();
+  $('#installBanner').classList.add('hidden');
+});
+window.addEventListener('appinstalled', () => {
+  $('#installBanner').classList.add('hidden');
+});
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
 
 /* ---------- STARDATE ---------- */
 function updateStardate() {

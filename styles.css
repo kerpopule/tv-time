@@ -100,6 +100,8 @@ body {
   display: grid; place-items: center;
   box-shadow: 0 0 18px var(--amber-glow);
   transition: transform 0.18s ease;
+  position: relative;
+  z-index: 2;
 }
 .add-btn:active { transform: scale(0.92); }
 .add-btn svg { width: 22px; height: 22px; stroke-width: 3; }
@@ -131,6 +133,8 @@ body {
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s ease;
+  position: relative;
+  z-index: 2;
 }
 .ltab .lt-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); transition: all 0.2s ease; }
 .ltab .lt-dot.alert {
@@ -212,6 +216,9 @@ body {
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
   pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 .poster:active { transform: scale(0.96); }
 .poster:hover { border-color: var(--amber); box-shadow: 0 8px 24px rgba(255, 182, 72, 0.25); }
@@ -231,6 +238,7 @@ body {
   font-family: 'Orbitron', monospace;
   font-weight: 900; font-size: 26px;
   border: 1px solid var(--border);
+  pointer-events: none;
 }
 .poster .overlay {
   position: absolute; inset: 0;
@@ -681,3 +689,36 @@ body {
 .toast .emoji { margin-right: 6px; }
 
 input[type="search"], input[type="text"], button, select, textarea { font-size: 16px; }
+
+.install-banner {
+  position: fixed;
+  left: 12px; right: 12px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+  z-index: 200;
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, #1a1208, #000);
+  border: 1px solid var(--amber);
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.7), 0 0 24px var(--amber-glow);
+  animation: slideUp 0.4s ease both;
+}
+.ib-text { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.ib-text strong {
+  font-family: 'Orbitron', monospace; font-size: 11.5px; letter-spacing: 0.1em;
+  color: var(--amber);
+}
+.ib-text span { font-size: 12px; color: var(--text); opacity: 0.75; }
+.ib-btn {
+  padding: 8px 14px; border-radius: 999px;
+  background: var(--amber); color: #000; border: none;
+  font-family: 'Orbitron', monospace; font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em;
+  cursor: pointer;
+}
+.ib-btn:active { transform: scale(0.95); }
+.ib-x {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: transparent; border: 1px solid var(--border);
+  color: var(--muted); font-size: 18px; line-height: 1;
+  cursor: pointer; padding: 0;
+}
